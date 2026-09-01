@@ -170,8 +170,8 @@
   #event-card {
     @apply flex flex-col gap-3;
 
-    .poster {
-      @apply h-[300px] w-full rounded-lg object-cover;
+    .poster-wrapper {
+      @apply relative h-[300px] w-full overflow-hidden rounded-lg;
     }
 
     .title {
