@@ -50,6 +50,11 @@ bookingSchema.pre("save", async function () {
   }
 });
 
+// Prevents the same email from booking the same event twice: MongoDB
+// rejects the second `Booking.create()` with a duplicate-key error
+// instead of silently allowing a second row.
+bookingSchema.index({ eventId: 1, email: 1 }, { unique: true, name: "uniq_event_email" });
+
 // Reuse the existing model in dev: Next.js hot-reload re-executes this
 // module, and calling `model()` twice for the same name throws
 // "OverwriteModelError".
