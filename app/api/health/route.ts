@@ -8,8 +8,11 @@ export async function GET() {
     await connectToDatabase();
     return NextResponse.json({ status: "ok", mongodb: "connected" });
   } catch (error) {
+    // Log the real error server-side only — never leak internals
+    // (stack traces, DB details) to the caller of a public endpoint.
+    console.error("Health check failed:", error);
     return NextResponse.json(
-      { status: "error", message: (error as Error).message },
+      { status: "error", message: "Database connection failed" },
       { status: 500 }
     );
   }

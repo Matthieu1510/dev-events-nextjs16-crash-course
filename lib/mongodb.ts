@@ -30,7 +30,6 @@ interface MongooseCache {
 // which would normally reset this cache too. Attaching it to `global`
 // instead makes it persist across hot-reloads within the same process.
 declare global {
-  // eslint-disable-next-line no-var
   var mongooseCache: MongooseCache | undefined;
 }
 

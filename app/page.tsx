@@ -1,18 +1,39 @@
 import ExploreBtn from "@/components/ExploreBtn";
 import EventCard from "@/components/EventCard";
-import { events } from "@/lib/constants";
+import {IEvent} from "@/database/event.model";
+import {cacheLife} from "next/cache";
 
-const Page = () => {
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+if (!BASE_URL) {
+    throw new Error(
+        "Missing NEXT_PUBLIC_BASE_URL environment variable. Add it to your .env.local file."
+    );
+}
+
+const Page = async () => {
+    'use cache';
+    cacheLife('hours')
+    const response = await fetch(`${BASE_URL}/api/events`);
+
+    if (!response.ok) {
+        // Let this surface through Next.js's error boundary instead of
+        // silently rendering the page as if there were simply no events.
+        console.error(`Failed to fetch events: ${response.status} ${response.statusText}`);
+        throw new Error("Failed to load events");
+    }
+
+    const {events} = await response.json();
     return (
         <section>
-            <h1 className="text-center">The Hub for Every Dev <br /> Event You Can't Miss</h1>
+            <h1 className="text-center">The Hub for Every Dev <br /> Event You Can&apos;t Miss</h1>
             <p className="text-center mt-5">Hackathons, Meetups, and Conferences, All in One Place</p>
             <ExploreBtn />
 
             <div className="mt-20 space-y-7">
                 <h3> Featured Events</h3>
                 <ul className="events">
-                    {events.map((event) => (
+                    {events && events.length > 0 && events.map((event: IEvent) => (
                         <li key={event.slug}>
                             <EventCard {...event} />
                         </li>
