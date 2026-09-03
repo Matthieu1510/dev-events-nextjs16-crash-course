@@ -40,6 +40,14 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string}>})
 
     const {slug} = await params;
     const request = await fetch(`${BASE_URL}/api/events/${slug}`);
+
+    // A 404 (or any non-2xx) response body is `{ message: ... }` with no
+    // `event` key — destructuring it directly would throw instead of
+    // showing the intended not-found page.
+    if (!request.ok) {
+        return notFound();
+    }
+
     const {event: {description, image, overview, date, time, location, mode, agenda, audience, organizer, tags}} = await request.json();
 
     if(!description) return notFound();

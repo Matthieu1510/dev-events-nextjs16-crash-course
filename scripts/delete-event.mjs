@@ -1,6 +1,7 @@
 // One-off, targeted deletion: removes exactly one Event document by its
-// slug. Hardcoded to "cloud-next-2026" on purpose — this script deletes
-// nothing else, and does nothing at all if that slug doesn't exist.
+// slug. Edit SLUG_TO_DELETE below to target a specific event — this
+// script deletes nothing else, and does nothing at all if that slug
+// doesn't exist.
 //
 // Run from the project root with:
 //   node --env-file=.env.local scripts/delete-event.mjs
