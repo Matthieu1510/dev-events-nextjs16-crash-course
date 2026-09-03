@@ -28,7 +28,11 @@ function tryParseLegacyArray(value) {
   if (typeof raw !== "string" || !raw.trim().startsWith("[")) return null;
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.map(String) : null;
+    // The legacy bug always collapsed multiple items into one string —
+    // a single-element result is more likely a genuine one-item array
+    // (e.g. a tag whose text happens to start with "[") than legacy data,
+    // so leave it alone rather than guess.
+    return Array.isArray(parsed) && parsed.length > 1 ? parsed.map(String) : null;
   } catch {
     return null;
   }
