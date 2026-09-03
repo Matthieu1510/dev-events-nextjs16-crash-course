@@ -7,8 +7,10 @@ import posthog from "posthog-js";
 const BookEvent = ({ eventId, slug}: {eventId: string, slug: string}) => {
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState('');
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
         const { success } = await createBooking({eventId, slug, email});
         if(success) {
             setSubmitted(true);
@@ -16,11 +18,8 @@ const BookEvent = ({ eventId, slug}: {eventId: string, slug: string}) => {
         } else {
             console.error('Error creating booking event');
             posthog.captureException('Booking Creation failed');
+            setError("Something went wrong — this email may already be booked for this event. Please try again.");
         }
-        e.preventDefault();
-        setTimeout(() => {
-            setSubmitted(true);
-        }, 1000)
     }
     return (
         <div id="book-event">
@@ -37,6 +36,7 @@ const BookEvent = ({ eventId, slug}: {eventId: string, slug: string}) => {
                                placeholder="Enter your email address"
                         />
                         <button type="submit" className="button-submit">Submit</button>
+                        {error && <p className="text-sm">{error}</p>}
                     </div>
                 </form>
             )}
