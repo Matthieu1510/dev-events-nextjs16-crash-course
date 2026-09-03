@@ -16,14 +16,17 @@ const Page = async () => {
     cacheLife('hours')
     const response = await fetch(`${BASE_URL}/api/events`);
 
-    if (!response.ok) {
-        // Let this surface through Next.js's error boundary instead of
-        // silently rendering the page as if there were simply no events.
+    // Don't hard-crash the whole homepage over a failed events fetch (e.g.
+    // the very first production build, before any deployment is live yet
+    // to answer this same-origin call) — log it server-side and render an
+    // empty list instead, matching the reference implementation's
+    // graceful-degradation behavior.
+    let events: IEvent[] = [];
+    if (response.ok) {
+        ({events} = await response.json());
+    } else {
         console.error(`Failed to fetch events: ${response.status} ${response.statusText}`);
-        throw new Error("Failed to load events");
     }
-
-    const {events} = await response.json();
     return (
         <section>
             <h1 className="text-center">The Hub for Every Dev <br /> Event You Can&apos;t Miss</h1>
